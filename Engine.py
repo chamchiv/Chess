@@ -15,6 +15,11 @@ class GameState:
        self.inCheck = False 
        self.pins = []
        self.checks = []
+       self.checkmate = False
+       self.stalemate = False
+       self.enpassant = ()
+       
+
        
 
     
@@ -33,7 +38,7 @@ class GameState:
     Takes a move then executes the move, will not work for castling and en passant and promotion
     """
     def makeMove(self,Move):
-         if self.board[Move.Startrow][Move.Startcol] != ' ':
+            self.board[Move.Startrow][Move.Startcol] != ' '
             self.board[Move.Startrow][Move.Startcol] = ' '
             self.board[Move.endrow][Move.endcol] = Move.pieceMoved
             self.movelog.append(Move)
@@ -43,11 +48,10 @@ class GameState:
                 self.WhiteKingLocation = (Move.endrow, Move.endcol)
             elif Move.pieceMoved == "bK":
                 self.blackKingLocation = (Move.endrow, Move.endcol)
-
-        # self.board[Move.Startrow][Move.Startcol] = " "
-        # self.board[Move.endrow][Move.endcol] = Move.pieceMoved
-        # self.movelog.append(Move)
-        # self.WhitetoMove = not self.WhitetoMove  
+            #pawn promotion
+            if Move.isPawnPromotion:
+                self.board[Move.endrow][Move.endcol] = Move.pieceMoved[0] + 'Q'
+             
     """
     Legal moves under check
     """   
@@ -332,7 +336,7 @@ class Move(GameState):
     filestoCols = {"a":0,"b":1,"c":2,"d":3,"e":4,"f":5,"g":6,"h":7}
     colsToFiles = {v: k for k, v in filestoCols.items()}
     
-    def __init__(self, startSq, endSq, board,promotionPiece=None):
+    def __init__(self, startSq, endSq, board):
         super().__init__()
         self.Startrow = startSq[0]
         self.Startcol = startSq[1]
@@ -341,9 +345,11 @@ class Move(GameState):
         self.pieceMoved = board[self.Startrow][self.Startcol]
         self.pieceCapt = board[self.endrow][self.endcol]
         self.moveID = self.Startrow * 1000 + self.Startcol * 100 + self.endrow * 10 + self.endcol
-        self.PromotionChoice = promotionPiece
+        self.isPawnPromotion = False
+        self.PromotionChoice = []
+        if (self.pieceMoved == 'wp' and self.endrow == 0) or (self.pieceMoved == 'bp'and self.endrow == 7):
+            self.isPawnPromotion = True 
 
-        
     '''
     Overiding the equals method
     '''
@@ -364,50 +370,3 @@ class Move(GameState):
 
 
 
-
-"""
-Classes of Chess pieces
-"""
-
-# class Piece(Move):
-#     def __init__(self, color,r,c,moves):
-#         self.color = color
-    
-#     def get_valid_moves(self, board, start_row, start_col):
-#         pass
-
-# class Pawn(Piece):
-#     def get_valid_moves(self, board, start_row, start_col):
-#         if self.WhitetoMove:
-#             if self.board[start_row -1][start_col] == ' ':
-                
-
-
-# class Rook(Piece):
-#     def get_valid_moves(self, board, start_row, start_col):
-#         # Logic to calculate valid moves for a rook
-#         pass
-
-
-# class Knight(Piece):
-#     def get_valid_moves(self, board, start_row, start_col):
-#         # Logic to calculate valid moves for a knight
-#         pass
-
-
-# class Bishop(Piece):
-#     def get_valid_moves(self, board, start_row, start_col):
-#         # Logic to calculate valid moves for a bishop
-#         pass
-
-
-# class Queen(Piece):
-#     def get_valid_moves(self, board, start_row, start_col):
-#         # Logic to calculate valid moves for a queen
-#         pass
-
-
-# class King(Piece):
-#     def get_valid_moves(self, board, start_row, start_col):
-#         # Logic to calculate valid moves for a king
-#         pass

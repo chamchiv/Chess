@@ -100,8 +100,29 @@ def drawPieces(screen, board):
                 screen.blit(Images[piece], p.Rect(columns*square_size, row*square_size, square_size, square_size))
 
 #draws the piece promotion popout 
+def drawPawnPromo(screen):
+    dialog_width = 200
+    dialog_height = 200
+    dialog_surface = p.Surface((dialog_width,dialog_height))
+    dialog_rect = dialog_surface.get_rect(center = (width//2, height//2))
 
+    for i, piece in enumerate(['R','N','B','Q']):
+        rect = Images[piece].get_rect(center=(dialog_width//2,dialog_height//len(['R','N','B','Q'])*(i+0.5)))
+        dialog_surface.blit(Images[piece], rect)
+    
+    screen.blit(dialog_surface, dialog_rect)
+    p.display.update()
 
+    while True:
+        for event in p.event.get():
+            if even.type == p.MOUSEBUTTONDOWN:
+                mouse_pos = p.mouse.get_pos()
+                if dialog_rect.collidepoint(mouse_pos):
+                    piece_index = (mouse_pos[1] -  dialog_rect.y) // (dialog_height//len(['R','N','B','Q']))
+                    return ['R','N','B','Q'][piece_index]
+            elif event.type == p.QUIT:
+                p.quit()
+    
 if __name__ == "__main__":
     main()
 
